@@ -1,473 +1,260 @@
-# Introduction
+# 简介
 
-The goal of this style guide is to present a set of best practices and style guidelines for one AngularJS application.
-These best practices are collected from:
+本风格指南的目的是展示AngularJS应用的最佳实践和风格指南。
+这些最佳实践来自于：
 
-0. AngularJS source code
-0. Source code or articles I've read
-0. My own experience
+0. AngularJS项目源码
+0. 本人阅读过的源码和文章
+0. 本人的实践经历
 
-**Note 1**: this is still a draft of the style guide, its main goal is to be community-driven so filling the gaps will be greatly appreciated by the whole community.
+**说明**: 这只是风格指南的草案，主要目的是通过交流以消除分歧，进而被社区广泛采纳。
 
-**Note 2**: before following any of the guidelines in the translations of the English document, make sure they are up-to date. The latest version of the AngularJS style guide is in the current document.
-
-In this style guide you won't find common guidelines for JavaScript development. Such can be found at:
+在本指南中不会包含基本的JavaScript开发指南。这些基本的指南可以在下面的列表中找到：
 
 0. [Google's JavaScript style guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
 0. [Mozilla's JavaScript style guide](https://developer.mozilla.org/en-US/docs/Developer_Guide/Coding_Style)
 0. [GitHub's JavaScript style guide](https://github.com/styleguide/javascript)
 0. [Douglas Crockford's JavaScript style guide](http://javascript.crockford.com/code.html)
-0. [Airbnb JavaScript style guide](https://github.com/airbnb/javascript)
 
-For AngularJS development recommended is the [Google's JavaScript style guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml).
+对于AngularJS开发，推荐 [Google's JavaScript style guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml).
 
-In AngularJS's GitHub wiki there is a similar section by [ProLoser](https://github.com/ProLoser), you can check it [here](https://github.com/angular/angular.js/wiki).
+在AngularJS的Github wiki中有一个相似的章节 [ProLoser](https://github.com/ProLoser), you can check it [here](https://github.com/angular/angular.js/wiki).
 
-# Table of content
-* [General](#general)
-    * [Directory structure](#directory-structure)
-    * [Markup](#markup)
-    * [Optimize the digest cycle](#optimize-the-digest-cycle)
-    * [Others](#others)
-* [Modules](#modules)
-* [Controllers](#controllers)
-* [Directives](#directives)
-* [Filters](#filters)
-* [Services](#services)
-* [Templates](#templates)
-* [Routing](#routing)
-* [Testing](#testing)
-* [Contribution](#contribution)
-* [Contributors](#contributors)
+# 内容目录
+* [概览](#general)
+    * [目录结构](#directory-structure)
+    * [优化 digest cycle](#optimize-the-digest-cycle)
+    * [其他](#others)
+* [模块](#modules)
+* [控制器](#controllers)
+* [指令](#directives)
+* [过滤器](#filters)
+* [服务](#services)
+* [模板](#templates)
+* [路由](#routing)
 
-# General
+# 概览
 
-## Directory structure
+## 目录结构
 
-Since a large AngularJS application has many components it's best to structure it in a directory hierarchy.
-There are two main approaches:
+由于一个大型的AngularJS应用有较多组成部分，所以最好通过分层的目录结构来组织。
+有两个主流的组织方式：
 
-* Creating high-level divisions by component types and lower-level divisions by functionality.
+* 按照类型优先，业务功能其次的组织方式
 
-In this way the directory structure will look like:
+这种方式的目录结构看起来如下：
 
-```
-.
-├── app
-│   ├── app.js
-│   ├── controllers
-│   │   ├── home
-│   │   │   ├── FirstCtrl.js
-│   │   │   └── SecondCtrl.js
-│   │   └── about
-│   │       └── ThirdCtrl.js
-│   ├── directives
-│   │   ├── home
-│   │   │   └── directive1.js
-│   │   └── about
-│   │       ├── directive2.js
-│   │       └── directive3.js
-│   ├── filters
-│   │   ├── home
-│   │   └── about
-│   └── services
-│       ├── CommonService.js
-│       ├── cache
-│       │   ├── Cache1.js
-│       │   └── Cache2.js
-│       └── models
-│           ├── Model1.js
-│           └── Model2.js
-├── partials
-├── lib
-└── test
-```
+    .
+    ├── app
+    │   ├── app.js
+    │   ├── controllers
+    │   │   ├── page1
+    │   │   │   ├── FirstCtrl.js
+    │   │   │   └── SecondCtrl.js
+    │   │   └── page2
+    │   │       └── ThirdCtrl.js
+    │   ├── directives
+    │   │   ├── page1
+    │   │   │   └── directive1.js
+    │   │   └── page2
+    │   │       ├── directive2.js
+    │   │       └── directive3.js
+    │   ├── filters
+    │   │   ├── page1
+    │   │   └── page2
+    │   └── services
+    │       ├── CommonService.js
+    │       ├── cache
+    │       │   ├── Cache1.js
+    │       │   └── Cache2.js
+    │       └── models
+    │           ├── Model1.js
+    │           └── Model2.js
+    ├── lib
+    └── test
 
-* Creating high-level divisions by functionality and lower-level divisions by component types.
+* 按照业务功能优先，类型其次的组织方式
 
-Here is its layout:
+如下：
 
-```
-.
-├── app
-│   ├── app.js
-│   ├── common
-│   │   ├── controllers
-│   │   ├── directives
-│   │   ├── filters
-│   │   └── services
-│   ├── home
-│   │   ├── controllers
-│   │   │   ├── FirstCtrl.js
-│   │   │   └── SecondCtrl.js
-│   │   ├── directives
-│   │   │   └── directive1.js
-│   │   ├── filters
-│   │   │   ├── filter1.js
-│   │   │   └── filter2.js
-│   │   └── services
-│   │       ├── service1.js
-│   │       └── service2.js
-│   └── about
-│       ├── controllers
-│       │   └── ThirdCtrl.js
-│       ├── directives
-│       │   ├── directive2.js
-│       │   └── directive3.js
-│       ├── filters
-│       │   └── filter3.js
-│       └── services
-│           └── service3.js
-├── partials
-├── lib
-└── test
-```
+    .
+    ├── app
+    │   ├── app.js
+    │   ├── common
+    │   │   ├── controllers
+    │   │   ├── directives
+    │   │   ├── filters
+    │   │   └── services
+    │   ├── page1
+    │   │   ├── controllers
+    │   │   │   ├── FirstCtrl.js
+    │   │   │   └── SecondCtrl.js
+    │   │   ├── directives
+    │   │   │   └── directive1.js
+    │   │   ├── filters
+    │   │   │   ├── filter1.js
+    │   │   │   └── filter2.js
+    │   │   └── services
+    │   │       ├── service1.js
+    │   │       └── service2.js
+    │   └── page2
+    │       ├── controllers
+    │       │   └── ThirdCtrl.js
+    │       ├── directives
+    │       │   ├── directive2.js
+    │       │   └── directive3.js
+    │       ├── filters
+    │       │   └── filter3.js
+    │       └── services
+    │           └── service3.js
+    ├── lib
+    └── test
 
-* When creating directives it may be useful to put all the files associated with the given directive files (i.e. templates, CSS/SASS files, JavaScript) in a single folder. If you choose to use this style be consistent and use it everywhere along your project.
+* 在创建指令时，合适的做法是将相关的文件放到同一目录下 (如：模板文件, CSS/SASS 文件, JavaScript文件)。如果你在整个项目周期都选择这种组织方式，
 
-```
-app
-└── directives
-    ├── directive1
-    │   ├── directive1.html
-    │   ├── directive1.js
-    │   └── directive1.sass
-    └── directive2
-        ├── directive2.html
-        ├── directive2.js
-        └── directive2.sass
-```
+        app
+        └── directives
+            ├── directive1
+            │   ├── directive1.html
+            │   ├── directive1.js
+            │   └── directive1.sass
+            └── directive2
+                ├── directive2.html
+                ├── directive2.js
+                └── directive2.sass
 
-This approach can be combined with both directory structures above.
-* One more slight variation of both directory structures is the one used in [ng-boilerplate](http://joshdmiller.github.io/ng-boilerplate/#/home). In it, the unit tests for a given component are put in the folder where the component is located. This way when you make changes to a given component finding its test is easy. The tests also act as documentation and show use cases.
+那么，上述的两种目录结构均能适用。
 
-```
-services
-├── cache
-│   ├── cache1.js
-│   └── cache1.spec.js
-└── models
-    ├── model1.js
-    └── model1.spec.js
-```
+* [ng-boilerplate](http://joshdmiller.github.io/ng-boilerplate/#/home) 采用了两种目录结构的一种更加轻量的方式。在这里，组件的单元测试与组件放置在同一目录下。在这种方式下，当改变组件时，更加容易找到对应的测试以及相关文档和用例。
 
-* The `app.js` file contains route definitions, configuration and/or manual bootstrap (if required).
-* Each JavaScript file should only hold a single component. The file should be named with the component's name.
-* Use Angular project structure template like [Yeoman](http://yeoman.io), [ng-boilerplate](http://joshdmiller.github.io/ng-boilerplate/#/home).
+        services
+        ├── cache
+        │   ├── cache1.js
+        │   └── cache1.spec.js
+        └── models
+            ├── model1.js
+            └── model1.spec.js
 
-I prefer the first structure because it makes common components easier to find.
+* `app.js`文件包含路由定义、配置和启动说明(如果需要的话)
+* 每一个 JavaScript 文件应该仅包含一个组件。文件名应该以组件名命名。
+* 使用 Angular 项目模板，如 [Yeoman](http://yeoman.io), [ng-boilerplate](http://joshdmiller.github.io/ng-boilerplate/#/home).
 
-Conventions about component naming can be found in each component section.
+本人更倾向于第一种组织方式，因为更易于查找组件。
 
-## Markup
+## 优化 digest cycle
 
-[TLDR;](http://developer.yahoo.com/blogs/ydn/high-performance-sites-rule-6-move-scripts-bottom-7200.html) Put the scripts at the bottom.
+* 只监听必要的变量(例如：在进行实时通讯时，不要在每次接收到消息时触发 digest loop)
+* 尽可能使 `$watch` 中的运算简单。在单个 `$watch` 中进行繁杂的运算将使得整个应用延缓(由于JavaScript的单线程特性，$digest loop 只能在单一线程进行)
 
-```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>MyApp</title>
-</head>
-<body>
-  <div ng-app="myApp">
-    <div ng-view></div>
-  </div>
-  <script src="angular.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
-```
+## 其他
 
-Keep things simple and put AngularJS specific directives later. This way is easy to look to the code and find enhanced HTML by the framework (what improve the maintainibility).
+* 使用：
+    * `$timeout`  替代 `setTimeout`
+    * `$window`   替代 `window`
+    * `$document` 替代 `document`
+    * `$http`     替代 `$.ajax`
 
-```
-<form class="frm" ng-submit="login.authenticate()">
-  <div>
-    <input class="ipt" type="text" placeholder="name" require ng-model="user.name">
-  </div>
-</form>
-```
+这将使你更易于在测试时处理代码异常 (例如：你在 `setTimeout` 中忘记 `$scope.$apply`)
 
-Other HTML atributes should follow the Code Guide's [recommendation](http://mdo.github.io/code-guide/#html-attribute-order)
-
-## Optimize the digest cycle
-
-* Watch only the most vital variables (for example: when using real-time communication, don't cause a `$digest` loop in each received message).
-* For content that is initialized only once and then never changed, use single-time watchers like [`bindonce`](https://github.com/Pasvaz/bindonce).
-* Make computations in `$watch`  as simple as possible. Making heavy and slow computations in a single `$watch` will slow down the whole application (the `$digest` loop is done in a single thread because of the single-threaded nature of JavaScript).
-* Set third parameter in `$timeout` function to false to skip the `$digest` loop when no watched variables are impacted by the invocation of the `$timeout` callback function.
-
-## Others
-
-* Use:
-    * `$timeout` instead of `setTimeout`
-    * `$interval` instead of `setInterval`
-    * `$window` instead of `window`
-    * `$document` instead of `document`
-    * `$http` instead of `$.ajax`
-
-This will make your testing easier and in some cases prevent unexpected behaviour (for example, if you missed `$scope.$apply` in `setTimeout`).
-
-* Automate your workflow using tools like:
+使用如下工具自动化你的工作流
     * [Yeoman](http://yeoman.io)
     * [Grunt](http://gruntjs.com)
     * [Bower](http://bower.io)
 
-* Use promises (`$q`) instead of callbacks. It will make your code look more elegant and clean, and save you from callback hell.
-* Use `$resource` instead of `$http` when possible. The higher level of abstraction will save you from redundancy.
-* Use an AngularJS pre-minifier (like [ngmin](https://github.com/btford/ngmin) or [ng-annotate](https://github.com/olov/ng-annotate)) for preventing problems after minification.
-* Don't use globals. Resolve all dependencies using Dependency Injection.
-* Do not pollute your `$scope`. Only add functions and variables that are being used in the templates.
-* Prefer the usage of [controllers instead of `ngInit`](https://github.com/angular/angular.js/pull/4366/files). The only appropriate use of `ngInit` is for aliasing special properties of `ngRepeat`. Besides this case, you should use controllers rather than `ngInit` to initialize values on a scope.
-* Do not use `$` prefix for the names of variables, properties and methods. This prefix is reserved for AngularJS usage.
-* When resolving dependencies through the DI mechanism of AngularJS, sort the dependencies by their type - the built-in AngularJS dependencies should be first, followed by your custom ones:
+* 使用 promise (`$q`) 而非回调。这将使你的代码更加优雅、直观，并且免于回调地狱。
+* 尽可能使用 `$resource` 而非 `$http`。更高的抽象可以避免冗余。
+* 使用AngularJS的预压缩版 (像 [ngmin](https://github.com/btford/ngmin) 或 [ng-annotate](https://github.com/olov/ng-annotate)) 避免在压缩之后出现问题。
+* 不要使用全局。通过依赖注入解决所有依赖。
+* 不要污染 `$scope`。仅添加与视图相关的函数和变量。
+* 使用 controllers 而非 `ngInit`。
 
-```javascript
-module.factory('Service', function ($rootScope, $timeout, MyCustomDependency1, MyCustomDependency2) {
-  return {
-    //Something
-  };
-});
-```
+# 模块
 
-# Modules
+有两种常见的组织模块的方式：
 
-* Modules should be named with lowerCamelCase. For indicating that module `b` is submodule of module `a` you can nest them by using namespacing like: `a.b`.
+0. 按照功能
+0. 按照组件类型
 
-There are two common ways for structuring the modules:
+当前并无太大差别，但前者更加清晰。同时，如果 lazy-loading modules 被实现的话 (当前并未列入 AngularJS 的路线图)，他将改善应用的性能。
 
-0. By functionality
-0. By component type
+# 控制器
 
-Currently there's not a big difference, but the first way looks cleaner. Also, if lazy-loading modules is implemented (currently not in the AngularJS roadmap), it will improve the app's performance.
+* 不要在控制器里操作 DOM。通过指令完成。
+* 通过控制器完成的功能命名控制器 (如：购物卡，主页，控制板)，并以字符串`Ctrl`结尾。控制器采用驼峰命名法 (`HomePageCtrl`, `ShoppingCartCtrl`, `AdminPanelCtrl`, etc.).
+* 控制器不应该在全局中定义 (尽管 AngularJS 允许，但污染全局空间是个糟糕的实践)。
+* 使用数组语法定义控制器：
 
-# Controllers
+        module.controller('MyCtrl', ['dependency1', 'dependency2', ..., 'dependencyn', function (dependency1, dependency2, ..., dependencyn) {
+          //...body
+        }]);
 
-* Do not manipulate DOM in your controllers, this will make your controllers harder for testing and will violate the [Separation of Concerns principle](https://en.wikipedia.org/wiki/Separation_of_concerns). Use directives instead.
-* The naming of the controller is done using the controller's functionality (for example shopping cart, homepage, admin panel) and the substring `Ctrl` in the end. The controllers are named UpperCamelCase (`HomePageCtrl`, `ShoppingCartCtrl`, `AdminPanelCtrl`, etc.).
-* The controllers should not be defined as globals (even though AngularJS allows this, it is a bad practice to pollute the global namespace).
-* Use array syntax for controller definitions:
+使用这种定义方式可以最大的避免问题。你可以使用工具自动生成数组定义，如：[ng-annotate](https://github.com/olov/ng-annotate) (and grunt task [grunt-ng-annotate](https://github.com/mzgol/grunt-ng-annotate)).
+* 使用控制器依赖的原名。这将提高代码的可读性：
 
+        module.controller('MyCtrl', ['$scope', function (s) {
+          //...body
+        }]);
 
-```JavaScript
-module.controller('MyCtrl', ['dependency1', 'dependency2', ..., 'dependencyn', function (dependency1, dependency2, ..., dependencyn) {
-  //...body
-}]);
-```
+下面的代码更易理解
 
+        module.controller('MyCtrl', ['$scope', function ($scope) {
+          //...body
+        }]);
 
-Using this type of definition avoids problems with minification. You can automatically generate the array definition from the standard one using tools like [ng-annotate](https://github.com/olov/ng-annotate) (and grunt task [grunt-ng-annotate](https://github.com/mzgol/grunt-ng-annotate)).
-* Use the original names of the controller's dependencies. This will help you produce more readable code:
+对于包含大量代码的需要上下滚动的文件尤其适用。这可能使你忘记某一变量是对应哪一个依赖。
 
-```JavaScript
-module.controller('MyCtrl', ['$scope', function (s) {
-  //...body
-}]);
-```
+* 尽可能的精简控制器。将通用函数抽象为独立的服务。
+* 通过方法引用进行跨控制器通讯 (通常是子控制器与父控制器通讯) 或者 `$emit`, `$broadcast` 及 `$on` 方法。发送或广播的消息应该限定在最小的作用域。
+* 制定一个通过 `$emit`, `$broadcast` 发送的消息列表并且仔细的管理以防命名冲突和bug。
+* 在需要格式化数据时将格式化逻辑封装成 [过滤器](#filters) 并将其声明为依赖：
 
-which is less readable than:
+        module.filter('myFormat', function () {
+          return function () {
+            //body...
+          };
+        });
 
-```JavaScript
-module.controller('MyCtrl', ['$scope', function ($scope) {
-  //...body
-}]);
-```
+        module.controller('MyCtrl', ['$scope', 'myFormatFilter', function ($scope, myFormatFilter) {
+          //body...
+        }]);
 
-This especially applies to a file that has so much code that you'd need to scroll through. This would possibly cause you to forget which variable is tied to which dependency.
+# 指令
 
-* Make the controllers as lean as possible. Abstract commonly used functions into a service.
-* Communicate within different controllers using method invocation (possible when a child wants to communicate with its parent) or `$emit`, `$broadcast` and `$on` methods. The emitted and broadcasted messages should be kept to a minimum.
-* Make a list of all messages which are passed using `$emit`, `$broadcast` and manage it carefully because of name collisions and possible bugs.
-* When you need to format data encapsulate the formatting logic into a [filter](#filters) and declare it as dependency:
+* 使用小写字母开头的驼峰法命名指令。
+* 在 link function 中使用 `scope` 而非 `$scope`。在 compile 中, 你已经定义参数的 post/pre link functions 将在函数被执行时传递, 你无法通过依赖注入改变他们。这种方式同样应用在 AngularJS 项目中。
+* 为你的指令添加自定义前缀以免与第三方指令冲突。
+* 不要使用 `ng` 或 `ui` 前缀，因为这些备用于 AngularJS 和 AngularJS UI。
+* DOM 操作只通过指令完成。
+* 为你开发的可复用组件创建独立作用域。
 
-```JavaScript
-module.filter('myFormat', function () {
-  return function () {
-    //body...
-  };
-});
+# 过滤器
 
-module.controller('MyCtrl', ['$scope', 'myFormatFilter', function ($scope, myFormatFilter) {
-  //body...
-}]);
-```
-* In case of nested controllers use "nested scoping" (the `controllerAs` syntax):
+* 使用小写字母开头的驼峰法命名过滤器
+* 尽可能使过滤器精简。过滤器在 `$digest` loop 中被频繁调用，过于复杂的运算将使得整个应用缓慢。
 
-**app.js**
-```javascript
-module.config(function ($routeProvider) {
-  $routeProvider
-    .when('/route', {
-      templateUrl: 'partials/template.html',
-      controller: 'HomeCtrl',
-      controllerAs: 'home'
-    });
-});
-```
-**HomeCtrl**
-```javascript
-function HomeCtrl() {
-  this.bindingValue = 42;
-}
-```
-**template.html**
-```
-<div ng-bind="home.bindingValue"></div>
-```
+# 服务
 
-# Directives
+* 用驼峰法命名服务(大写或小写开头)。
+* 将业务逻辑封装为服务。
+* 将业务逻辑封装成 `service` 而非 `factory`
+* 可以使用 `$cacheFactory` 进行会话级别的缓存。这应该用于缓存请求或复杂运算的结果。
 
-* Name your directives with lowerCamelCase.
-* Use `scope` instead of `$scope` in your link function. In the compile, post/pre link functions you have already defined arguments which will be passed when the function is invoked, you won't be able to change them using DI. This style is also used in AngularJS's source code.
-* Use custom prefixes for your directives to prevent name collisions with third-party libraries.
-* Do not use `ng` or `ui` prefixes since they are reserved for AngularJS and AngularJS UI usage.
-* DOM manipulations must be done only through directives.
-* Create an isolated scope when you develop reusable components.
-* Use directives as attributes or elements instead of comments or classes, this will make your code more readable.
-* Use `$scope.$on('$destroy', fn)` for cleaning up. This is especially useful when you're wrapping third-party plugins as directives.
-* Do not forget to use `$sce` when you should deal with untrusted content.
+# 模板
 
-# Filters
+* 使用 `ng-bind` 或者 `ng-cloak` 而非简单的 `{{ }}` 以防止页面渲染时的闪烁。
+* 避免在模板中使用复杂的代码。
+* 当需要动态设置 <img> 的 `src` 时使用 `ng-src` 而非 `src` 中嵌套 `{{}}` 的模板。
+* 通过对象参数和 scope 变量作为值来使用 `ng-style` 指令，而非将 scope 变量作为字符串通过 `{{ }}` 用于 `style` 属性。
 
-* Name your filters with lowerCamelCase.
-* Make your filters as light as possible. They are called often during the `$digest` loop so creating a slow filter will slow down your app.
-* Do a single thing in your filters, keep them coherent. More complex manipulations can be achieved by piping existing filters.
-
-# Services
-
-This section includes information about the service component in AngularJS. It is not dependent of the way of definition (i.e. as provider, `.factory`, `.service`), except if explicitly mentioned.
-
-* Use camelCase to name your services.
-  * UpperCamelCase (PascalCase) for naming your services, used as constructor functions i.e.:
-
-```JavaScript
-module.controller('MainCtrl', function ($scope, User) {
-  $scope.user = new User('foo', 42);
-});
-
-module.factory('User', function () {
-  return function User(name, age) {
-    this.name = name;
-    this.age = age;
-  };
-});
-```
-
-  * lowerCamelCase for all other services.
-
-* Encapsulate all the business logic in services.
-* Services representing the domain preferably a `service` instead of a `factory`. In this way we can take advantage of the "klassical" inheritance easier:
-
-```JavaScript
-function Human() {
-  //body
-}
-Human.prototype.talk = function () {
-  return "I'm talking";
-};
-
-function Developer() {
-  //body
-}
-Developer.prototype = Object.create(Human.prototype);
-Developer.prototype.code = function () {
-  return "I'm coding";
-};
-
-myModule.service('Human', Human);
-myModule.service('Developer', Developer);
-
-```
-
-* For session-level cache you can use `$cacheFactory`. This should be used to cache results from requests or heavy computations.
-* If given service requires configuration define the service as provider and configure it in the `config` callback like:
-
-```JavaScript
-angular.module('demo', [])
-.config(function ($provide) {
-  $provide.provider('sample', function () {
-    var foo = 42;
-    return {
-      setFoo: function (f) {
-        foo = f;
-      },
-      $get: function () {
-        return {
-          foo: foo
+        ...
+        $scope.divStyle = {
+          width: 200,
+          position: 'relative'
         };
-      }
-    };
-  });
-});
+        ...
 
-var demo = angular.module('demo');
+        <div ng-style="divStyle">my beautifully styled div which will work in IE</div>;
 
-demo.config(function (sampleProvider) {
-  sampleProvider.setFoo(41);
-});
-```
+# 路由
 
-# Templates
-
-* Use `ng-bind` or `ng-cloak` instead of simple `{{ }}` to prevent flashing content.
-* Avoid writing complex expressions in the templates.
-* When you need to set the `src` of an image dynamically use `ng-src` instead of `src` with `{{ }}` template.
-* When you need to set the `href` of an anchor tag dynamically use `ng-href` instead of `href` with `{{ }}` template.
-* Instead of using scope variable as string and using it with `style` attribute with `{{ }}`, use the directive `ng-style` with object-like parameters and scope variables as values:
-
-```HTML
-<script>
-...
-$scope.divStyle = {
-  width: 200,
-  position: 'relative'
-};
-...
-</script>
-
-<div ng-style="divStyle">my beautifully styled div which will work in IE</div>;
-```
-
-# Routing
-
-* Use `resolve` to resolve dependencies before the view is shown.
-
-# Testing
-
-TBD
-
-Until this section is completed you can use [this one](https://github.com/daniellmb/angular-test-patterns).
-
-# Contribution
-
-Since the goal of this style guide is to be community-driven, contributions are greatly appreciated.
-For example, you can contribute by extending the Testing section or by translating the style guide to your language.
-
-# Contributors
-
-[![mgechev](http://www.gravatar.com/avatar/82bafb0432ce4ccc9dcc26f94d5fe5bc?s=117)](https://github.com/mgechev) |[![pascalockert](http://www.gravatar.com/avatar/cf3cf69f535e77166c17bc5f586514f5?s=117)](https://github.com/pascalockert) |[![mainyaa](http://www.gravatar.com/avatar/c274adeb5303a1aae51f1e34bd7a3bc3?s=117)](https://github.com/mainyaa) |[![rubystream](http://www.gravatar.com/avatar/04952a6ee948f345e9c3727850d09a1b?s=117)](https://github.com/rubystream) |[![lukaszklis](http://www.gravatar.com/avatar/7a30aca2cf9658558247348b3be8c35e?s=117)](https://github.com/lukaszklis) |
-:---: |:---: |:---: |:---: |:---: |
-[mgechev](https://github.com/mgechev) |[pascalockert](https://github.com/pascalockert) |[mainyaa](https://github.com/mainyaa) |[rubystream](https://github.com/rubystream) |[lukaszklis](https://github.com/lukaszklis) |
-
-[![cironunes](http://www.gravatar.com/avatar/ac4189b770a4dbc0078935a68fff6f5c?s=117)](https://github.com/cironunes) |[![cavarzan](http://www.gravatar.com/avatar/929196ae336bbd9c18ad01f934b66e7a?s=117)](https://github.com/cavarzan) |[![tornad](http://www.gravatar.com/avatar/3e7f3900bc0c63b6bb6b27226decd16c?s=117)](https://github.com/tornad) |[![jmblog](http://www.gravatar.com/avatar/790f55ccde7a62df8f25747586657090?s=117)](https://github.com/jmblog) |[![bargaorobalo](http://www.gravatar.com/avatar/b7192b6465bbe490cd52ba35284875dd?s=117)](https://github.com/bargaorobalo) |
-:---: |:---: |:---: |:---: |:---: |
-[cironunes](https://github.com/cironunes) |[cavarzan](https://github.com/cavarzan) |[tornad](https://github.com/tornad) |[jmblog](https://github.com/jmblog) |[bargaorobalo](https://github.com/bargaorobalo) |
-
-[![astalker](http://www.gravatar.com/avatar/5a3df42b090e503da2a645fd8ee9e1ae?s=117)](https://github.com/astalker) |[![valgreens](http://www.gravatar.com/avatar/051395c4c052ac12282b5cf305441986?s=117)](https://github.com/valgreens) |[![bitdeli-chef](http://www.gravatar.com/avatar/b42c651650ec8d3d95829c75e318af2d?s=117)](https://github.com/bitdeli-chef) |[![dchest](http://www.gravatar.com/avatar/641aceb7e3d2eebea49f397c38048d0b?s=117)](https://github.com/dchest) |[![gsamokovarov](http://www.gravatar.com/avatar/1ac5a00efa41cd58c421d3cd98dda7b9?s=117)](https://github.com/gsamokovarov) |
-:---: |:---: |:---: |:---: |:---: |
-[astalker](https://github.com/astalker) |[valgreens](https://github.com/valgreens) |[bitdeli-chef](https://github.com/bitdeli-chef) |[dchest](https://github.com/dchest) |[gsamokovarov](https://github.com/gsamokovarov) |
-
-[![ntaoo](http://www.gravatar.com/avatar/791510818e4126572f81b2fbdd94bcc8?s=117)](https://github.com/ntaoo) |[![hermankan](http://www.gravatar.com/avatar/539a534a67ad8008f06b0bddead73aee?s=117)](https://github.com/hermankan) |[![jesselpalmer](http://www.gravatar.com/avatar/4c73b0fa2b13cc8452ea06931ca0ce30?s=117)](https://github.com/jesselpalmer) |[![capaj](http://www.gravatar.com/avatar/44c1dafa5cda3cb13c3852cfa0af14b3?s=117)](https://github.com/capaj) |[![jordanyee](http://www.gravatar.com/avatar/7ed91b95665d2ca887be784eb0472cf5?s=117)](https://github.com/jordanyee) |
-:---: |:---: |:---: |:---: |:---: |
-[ntaoo](https://github.com/ntaoo) |[hermankan](https://github.com/hermankan) |[jesselpalmer](https://github.com/jesselpalmer) |[capaj](https://github.com/capaj) |[jordanyee](https://github.com/jordanyee) |
-
-[![nacyot](http://www.gravatar.com/avatar/afeb8054efb8e03aab4ed7d90a52f11c?s=117)](https://github.com/nacyot) |[![kirstein](http://www.gravatar.com/avatar/d2987eb9402e60062ff45dd8a6b48d05?s=117)](https://github.com/kirstein) |[![mo-gr](http://www.gravatar.com/avatar/83c8d93df0ad3f1b0807b4c5bd3c47ad?s=117)](https://github.com/mo-gr) |[![cryptojuice](http://www.gravatar.com/avatar/bcdf80e3b1bef49806a3e9031877d11c?s=117)](https://github.com/cryptojuice) |[![olov](http://www.gravatar.com/avatar/a847d749f65088c41658483df5c550d9?s=117)](https://github.com/olov) |
-:---: |:---: |:---: |:---: |:---: |
-[nacyot](https://github.com/nacyot) |[kirstein](https://github.com/kirstein) |[mo-gr](https://github.com/mo-gr) |[cryptojuice](https://github.com/cryptojuice) |[olov](https://github.com/olov) |
-
-[![vorktanamobay](http://www.gravatar.com/avatar/5934bc3e68aeb155750c316c2c096bec?s=117)](https://github.com/vorktanamobay) |[![thomastuts](http://www.gravatar.com/avatar/57721e925989ec9c470d9d4a350bb211?s=117)](https://github.com/thomastuts) |[![grapswiz](http://www.gravatar.com/avatar/bcc635978c6284f4e3f7654260b05d7b?s=117)](https://github.com/grapswiz) |[![coderhaoxin](http://www.gravatar.com/avatar/c20564c7ed8da352b5cc359f41e1c1c4?s=117)](https://github.com/coderhaoxin) |[![dreame4](http://www.gravatar.com/avatar/c56cbc55d2a54b1165478acfb5a61fb4?s=117)](https://github.com/dreame4) |
-:---: |:---: |:---: |:---: |:---: |
-[vorktanamobay](https://github.com/vorktanamobay) |[thomastuts](https://github.com/thomastuts) |[grapswiz](https://github.com/grapswiz) |[coderhaoxin](https://github.com/coderhaoxin) |[dreame4](https://github.com/dreame4) |
-
+* 在视图展示之前通过 `resolve` 解决依赖。
